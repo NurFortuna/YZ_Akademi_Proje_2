@@ -1,29 +1,31 @@
 import os
 import cv2
-import datetime
 
 
 
-cap=cv2.VideoCapture(r"C:\Users\acer\Desktop\yz_akademi\videos\gumball.mp4")
+pathVideos=r"C:\Users\acer\Desktop\yz_akademi\videos"
+videos=os.listdir(pathVideos)
 
-i=0
-while(cap.isOpened()):
+i=1
+for video in videos:
     
-    ret,frame=cap.read()
-    if ret==False:
-        break
-    path=r"C:\Users\acer\Desktop\yz_akademi\frames\frame"+str(i)+".jpg"
-    cv2.imwrite(path,frame)
+    cap=cv2.VideoCapture(pathVideos+"\\"+video)
     
-    i+=1
-    if(i==5):
-        break
+    if(cap.isOpened() == False):
+        print("Error Opening Video Stream Or File")
     
+    while(cap.isOpened()):
+        # Capture frame-by-frame
+        ret, frame =cap.read()
+        
+        cv2.imwrite(r"C:\Users\acer\Desktop\yz_akademi\frames\frame"+str(i)+".jpg",frame)
+              
+        i+= 1 # Advance file counter
+                
+        if i%5==0:
+            break
+    
+  
+
 cap.release()
 cv2.destroyAllWindows()
-
-    
-    
-    
-    
-    
