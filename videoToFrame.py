@@ -1,69 +1,63 @@
+
 import os
 import cv2
 
-
-def createFolder(count,parent_dir=r"C:\Users\acer\Desktop\yz_akademi\frames"):
+def create_folder(dirName):
     
-    # Parent Directory path
-    #parent_dir=r"C:\Users\acer\Desktop\yz_akademi\frames"
-   
-    # Directory
-    directory = "frame"+str(count)
-   
-    # Path for frame
-    path = os.path.join(parent_dir, directory)
-    os.mkdir(path)
-    
-    return path
+    #Check path exists or not
+    if not os.path.exists(dirName):
+        os.mkdir(dirName)
+        print("Created ")
+    else:    
+        print("already exists")
 
+    return dirName
 
-def video_to_frame(pathVideos=r"C:\Users\acer\Desktop\yz_akademi\videos"):
-   
-    folder_count=0
-    frame_count=0
+def save_frames_and_create_new_folder_per_fifty(pathVideos, pathFrames):
     
+    #counter for the number of frames and number of folders
+    count = 0
     #Get the list of all videos
-    videos=os.listdir(pathVideos)
+    videos = os.listdir(pathVideos)
     
-    #create new folder
-    folder_path=createFolder(folder_count)
-    
+    os.mkdir(pathFrames+"\\"+str(count))
+    folder_path = pathFrames+"\\"+str(count)
+    #Check path exists or not
+    if not os.path.exists(pathFrames+"\\"+str(count)):
+        print("Folder is not exists")
+   
     for video in videos:
-        
-        #Create a video capture object
-        #we are reading the video
-        cap=cv2.VideoCapture(pathVideos+"\\"+video)
-        
+        cap = cv2.VideoCapture(pathVideos+"\\"+video)
         # Check if camera opened successfully
         if(cap.isOpened() == False):
             print("Error Opening Video Stream Or File")
         
         while(cap.isOpened()):
-            
-            # Capture frame-by-frame
-            ret, frame =cap.read()
-            
-            # if frame is read correctly ret is True
+            ret, frame = cap.read()
             if ret:
-                frame_count+= 1
+                count += 1    
+                #Save the image to folder_path
+                cv2.imwrite(folder_path+"\\"+str(count)+".jpg",frame)
                 
-                # Saving the image
-                cv2.imwrite(folder_path+"\\"+str(frame_count)+".jpg",frame)
-                
-                    
-                #for every 50 frames is created a new folder
-                
-                if frame_count%50==0:
-                    folder_count+=1 
-                    folder_path=createFolder(folder_count)    
-                    
-            # Break the loop
+                if count%50 == 0:
+                    #new folder is created for every 50 frames
+                    os.mkdir(pathFrames+"\\"+str(count))
+                    folder_path = pathFrames+"\\"+str(count)
+                    #Check path exists or not
+                    if not os.path.exists(pathFrames+"\\"+str(count)):
+                        print("Folder is not exists")
+                        break 
             else:
-                break
-    
-    # When everything done, release the video capture object                
+                break  
+    #When everything done, release the video capture object 
     cap.release()
-    
-    
-video_to_frame()
+   
 
+if __name__ == '__main__':
+    path = r"C:\Users\acer\Desktop\yz_akademi"
+    pathVideos = r"C:\Users\acer\Desktop\yz_akademi\videos"
+    frames = create_folder("frames") 
+    pathFrames = path + "\\" + frames
+    print(save_frames_and_create_new_folder_per_fifty(pathVideos, pathFrames))
+    
+    
